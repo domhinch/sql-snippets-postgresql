@@ -1,11 +1,17 @@
+-------------------------------------------
+# st_difference for large tables
+# keep_table: the table you want to retain
+# blade_table: the table used to cut out
+-------------------------------------------
+
 SELECT ST_Multi(COALESCE(
-         ST_Difference(a.geom, blade.geom),
-         a.geom
+         ST_Difference(kt.geom, blade.geom),
+         kt.geom
        )) AS geom
-FROM   table1 AS a
+FROM   keep_table kt
 CROSS JOIN LATERAL (
-  SELECT ST_Union(b.geom) AS geom
-  FROM   table2 AS b
-  WHERE  ST_Intersects(a.geom, b.geom) 
+  SELECT ST_Union(bt.geom) AS geom
+  FROM   blade_table AS bt
+  WHERE  ST_Intersects(kt.geom, bt.geom) 
 ) AS blade
 ;
